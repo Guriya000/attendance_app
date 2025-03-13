@@ -1,16 +1,24 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:attendance_app/screens/login_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../user_model.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  static UserModel? currentLoginUser;
 
   // Sign up with email and password
-  Future<User?> signUp(String email, String password) async {
+  static Future<UserModel?> signUp(UserModel userModel) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return result.user;
+      await _firestore.collection('users').add(userModel.toJson()).then((userData) {
+        print(userData);
+        userModel.id = userData.id;
+        currentLoginUser = userModel;
+        return currentLoginUser;
+      });
     } catch (e) {
       print("Error during signup: $e");
       return null;
@@ -18,13 +26,27 @@ class AuthService {
   }
 
   // Sign in with email and password
-  Future<User?> signIn(String email, String password) async {
+  static Future<UserModel?> signIn(String email, String pincode) async {
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return result.user;
+      QuerySnapshot querySnapshot = await _firestore.collection('users').where('email', isEqualTo: email).where('pincode', isEqualTo: pincode).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        userData['id'] = querySnapshot.docs.first.id;
+        currentLoginUser = UserModel.fromJson(userData);
+        return currentLoginUser;
+      } else {
+        // Hide the existing snackbar if any
+        ScaffoldMessenger.of(Get.context!).hideCurrentSnackBar();
+
+        // Show a snackbar with an error message
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          const SnackBar(
+            content: Text("No user found with the provided email and pincode."),
+          ),
+        );
+        return null;
+      }
     } catch (e) {
       print("Error during login: $e");
       return null;
@@ -32,12 +54,32 @@ class AuthService {
   }
 
   // Sign out
-  Future<void> signOut() async {
-    await _auth.signOut();
+  static Future<void> signOut() async {
+    currentLoginUser = null;
+    Get.offAll(() => const LoginPage());
   }
 
   // Get current user
-  User? getCurrentUser() {
-    return _auth.currentUser;
+  static UserModel? getCurrentUser() {
+    return currentLoginUser;
+  }
+
+  // Get user by ID
+  static Future<UserModel?> getUserById(String id) async {
+    try {
+      DocumentSnapshot documentSnapshot = await _firestore.collection('users').doc(id).get();
+
+      if (documentSnapshot.exists) {
+        var userData = documentSnapshot.data() as Map<String, dynamic>;
+        userData['id'] = documentSnapshot.id;
+        return UserModel.fromJson(userData);
+      } else {
+        print("No user found with the provided ID.");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching user by ID: $e");
+      return null;
+    }
   }
 }
