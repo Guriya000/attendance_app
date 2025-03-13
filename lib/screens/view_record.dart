@@ -52,7 +52,7 @@ class ViewRecord extends StatelessWidget {
                   'Date: ${record.dateTime.toString()}',
                   style: TextStyle(color: record.date == DateFormat('dd-MM-yyyy').format(DateTime.now()) ? Colors.green.shade800 : null),
                 ),
-                subtitle: Text('Status: ${record.isInPremises ? "In Premises" : "Outside Premises"}'),
+                subtitle: Text('Status: ${record.isInPremises ? "In-Premises" : "Outside-Premises"}'),
               );
             },
           );
