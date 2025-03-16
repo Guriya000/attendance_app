@@ -18,7 +18,7 @@ class AttendanceService {
     // double longitude = 73.223078;
 
     if (AuthService.getCurrentUser() != null) {
-      if (await hasMarkedAttendanceToday(AuthService.getCurrentUser()!.id.toString()) && false) {
+      if (await hasMarkedAttendanceToday(AuthService.getCurrentUser()!.id.toString())) {
         ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(
           content: Text(
             "You have already marked your attendance for today!",

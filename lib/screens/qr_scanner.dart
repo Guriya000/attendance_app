@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:attendance_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
@@ -40,7 +41,7 @@ class _QrScannerState extends State<QrScanner> {
                     if (await AttendanceService.markAttendance(AuthService.getCurrentUser()!.id.toString(), json2['class'])) {
                       AppService.hideLoader();
                       Get.back();
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(
                         content: Text(
                           "Attendance marked successfully!",
                           style: TextStyle(color: Colors.black),
@@ -48,15 +49,14 @@ class _QrScannerState extends State<QrScanner> {
                         backgroundColor: Colors.green,
                       ));
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(
                         content: Text(
                           "Error marking attendance!",
                           style: TextStyle(color: Colors.white),
                         ),
                         backgroundColor: Colors.red,
                       ));
-                      AppService.hideLoader();
-                      controller.resumeCamera();
+                      Get.offAll(() => const HomeScreen());
                     }
                   },
                   child: const Text('Yes'),
