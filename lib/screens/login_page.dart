@@ -7,7 +7,7 @@ import 'package:attendance_app/services/auth_services.dart';
 import 'package:attendance_app/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,24 +20,25 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  FocusNode _passwordFocusNode = FocusNode();
   bool _isFirstTime = true;
 
   // Save email to SharedPreferences
-  Future<void> _saveEmail(String email) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('savedEmail', email);
-  }
+  // Future<void> _saveEmail(String email) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('savedEmail', email);
+  // }
 
-  // Load saved email from SharedPreferences
+  // // Load saved email from SharedPreferences
   Future<void> _loadSavedEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedEmail = prefs.getString('savedEmail');
-
+    String? savedEmail = AuthService.getEmail();
     if (savedEmail != null) {
       setState(() {
         _emailController.text = savedEmail;
         _isFirstTime = false;
       });
+      await Future.delayed(const Duration(seconds: 1));
+      _passwordFocusNode.requestFocus();
     }
   }
 
@@ -50,16 +51,13 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
         title: const Text(
           "LOGIN TO MARK ATTENDANCE",
-          style: TextStyle(
-              letterSpacing: 1,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 16),
+          style: TextStyle(letterSpacing: 1, color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
       body: Stack(
@@ -83,13 +81,12 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     Padding(
-                        padding:
-                            const EdgeInsets.only(top: 10, left: 30, right: 30),
+                        padding: const EdgeInsets.only(top: 10, left: 30, right: 30),
                         child: TextFormField(
                           controller: _emailController,
                           onFieldSubmitted: (value) {
                             if (_isFirstTime) {
-                              _loadSavedEmail();
+                              // _loadSavedEmail();
                             }
                           },
                           validator: (value) {
@@ -100,14 +97,8 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           decoration: InputDecoration(
                             filled: true,
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide:
-                                    const BorderSide(color: Colors.red)),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 1.5)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
                             label: const Text("Enter Email"),
                             fillColor: Colors.white,
                             prefixIcon: Icon(
@@ -115,13 +106,11 @@ class _LoginPageState extends State<LoginPage> {
                               Icons.email,
                               color: Colors.red.shade900,
                             ),
-                            labelStyle: const TextStyle(
-                                color: Colors.blue, fontSize: 12),
+                            labelStyle: const TextStyle(color: Colors.blue, fontSize: 12),
                           ),
                         )),
                     Padding(
-                        padding:
-                            const EdgeInsets.only(top: 15, left: 30, right: 30),
+                        padding: const EdgeInsets.only(top: 15, left: 30, right: 30),
                         child: TextFormField(
                           controller: _passwordController,
                           validator: (value) {
@@ -130,16 +119,12 @@ class _LoginPageState extends State<LoginPage> {
                             }
                             return null;
                           },
+                          keyboardType: TextInputType.number,
+                          focusNode: _passwordFocusNode,
                           decoration: InputDecoration(
                             filled: true,
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide:
-                                    const BorderSide(color: Colors.red)),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide: const BorderSide(
-                                    color: Colors.red, width: 1.5)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
                             label: const Text("Enter Pin"),
                             fillColor: Colors.white,
                             prefixIcon: Icon(
@@ -147,33 +132,20 @@ class _LoginPageState extends State<LoginPage> {
                               Icons.password,
                               color: Colors.red.shade900,
                             ),
-                            labelStyle: const TextStyle(
-                                color: Colors.blue, fontSize: 12),
+                            labelStyle: const TextStyle(color: Colors.blue, fontSize: 12),
                           ),
                         )),
                     Padding(
-                      padding:
-                          const EdgeInsets.only(top: 15, left: 30, right: 30),
+                      padding: const EdgeInsets.only(top: 15, left: 30, right: 30),
                       child: GestureDetector(
                         child: Container(
                           height: 45,
                           width: double.infinity,
-                          decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey.shade300,
-                                    offset: const Offset(1, 1.5),
-                                    spreadRadius: 1)
-                              ],
-                              color: Theme.of(context).primaryColor,
-                              border: Border.all(color: Colors.red),
-                              borderRadius: BorderRadius.circular(15)),
+                          decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.grey.shade300, offset: const Offset(1, 1.5), spreadRadius: 1)], color: Theme.of(context).primaryColor, border: Border.all(color: Colors.red), borderRadius: BorderRadius.circular(15)),
                           child: const Center(
                             child: Text(
                               "LOGIN",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -211,9 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                   GestureDetector(
                     child: Text(
                       "SIGNUP",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue.shade700),
                     ),
                     onTap: () {
                       Get.to(const SignupPage());

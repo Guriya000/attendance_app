@@ -2,7 +2,8 @@ import 'package:attendance_app/screens/login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_storage/get_storage.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 import '../user_model.dart';
 
@@ -13,8 +14,7 @@ class AuthService {
   // Sign up with email and password
   static Future<UserModel?> signUp(UserModel userModel) async {
     try {
-      DocumentReference userRef =
-          await _firestore.collection('users').add(userModel.toJson());
+      DocumentReference userRef = await _firestore.collection('users').add(userModel.toJson());
       userModel.id = userRef.id;
       currentLoginUser = userModel;
       return currentLoginUser;
@@ -30,16 +30,14 @@ class AuthService {
     String pincode,
   ) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .where('pincode', isEqualTo: pincode)
-          .get();
+      QuerySnapshot querySnapshot = await _firestore.collection('users').where('email', isEqualTo: email).where('pincode', isEqualTo: pincode).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
         userData['id'] = querySnapshot.docs.first.id;
         currentLoginUser = UserModel.fromJson(userData);
+
+        saveEmail(email);
 
         return currentLoginUser;
       } else {
@@ -74,8 +72,7 @@ class AuthService {
   // Get user by ID
   static Future<UserModel?> getUserById(String id) async {
     try {
-      DocumentSnapshot documentSnapshot =
-          await _firestore.collection('users').doc(id).get();
+      DocumentSnapshot documentSnapshot = await _firestore.collection('users').doc(id).get();
 
       if (documentSnapshot.exists) {
         var userData = documentSnapshot.data() as Map<String, dynamic>;
@@ -94,8 +91,7 @@ class AuthService {
   // Get user by email
   Future<UserModel?> getUserByEmail(String email) async {
     try {
-      DocumentSnapshot documentSnapshot =
-          await _firestore.collection('users').doc(email).get();
+      DocumentSnapshot documentSnapshot = await _firestore.collection('users').doc(email).get();
 
       if (documentSnapshot.exists) {
         var userData = documentSnapshot.data() as Map<String, dynamic>;
@@ -103,28 +99,24 @@ class AuthService {
 
         return UserModel.fromJson(userData);
       } else {
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-            SnackBar(content: Text("No user found with the provided email.")));
+        ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(content: Text("No user found with the provided email.")));
 
         return null;
       }
     } catch (e) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
-          SnackBar(content: Text("Error fetching user by email: $e")));
+      ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(content: Text("Error fetching user by email: $e")));
 
       return null;
     }
   }
 
   // Save email to SharedPreferences
-  Future<void> saveEmail(String email) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_email', email);
+  static Future<void> saveEmail(String email) async {
+    GetStorage().write('lastLoginEmail', email);
   }
 
   // Retrieve email from SharedPreferences
-  Future<String?> getEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_email');
+  static String? getEmail() {
+    return GetStorage().read('lastLoginEmail');
   }
 }

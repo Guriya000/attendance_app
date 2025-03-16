@@ -20,8 +20,8 @@ class AttendanceRecord {
       userId: data['userId'],
       dateTime: (data['dateTime'] as Timestamp).toDate(),
       isInPremises: data['isInPremises'],
-      date: data['date'],
-      time: data['time'],
+      date: data.containsKey('date') ? data['date'] : null,
+      time: data.containsKey('time') ? data['time'] : null,
     );
   }
 }

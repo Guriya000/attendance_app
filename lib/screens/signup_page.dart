@@ -28,11 +28,7 @@ class _SignupPageState extends State<SignupPage> {
           centerTitle: true,
           title: const Text(
             "SIGN UP TO MARK ATTENDANCE",
-            style: TextStyle(
-                letterSpacing: 1,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 16),
+            style: TextStyle(letterSpacing: 1, color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
           )),
       body: SingleChildScrollView(
         child: Stack(
@@ -56,8 +52,7 @@ class _SignupPageState extends State<SignupPage> {
                   child: Column(
                     children: [
                       Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, left: 30, right: 30),
+                          padding: const EdgeInsets.only(top: 10, left: 30, right: 30),
                           child: TextFormField(
                             controller: _nameController,
                             validator: (value) {
@@ -68,14 +63,8 @@ class _SignupPageState extends State<SignupPage> {
                             },
                             decoration: InputDecoration(
                               filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide:
-                                      const BorderSide(color: Colors.red)),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                      color: Colors.red, width: 1.5)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
                               label: const Text("Enter Name"),
                               fillColor: Colors.white,
                               prefixIcon: Icon(
@@ -83,34 +72,25 @@ class _SignupPageState extends State<SignupPage> {
                                 Icons.person,
                                 color: Colors.red.shade900,
                               ),
-                              labelStyle: const TextStyle(
-                                  color: Colors.blue, fontSize: 12),
+                              labelStyle: const TextStyle(color: Colors.blue, fontSize: 12),
                             ),
                           )),
                       Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, left: 30, right: 30),
+                          padding: const EdgeInsets.only(top: 10, left: 30, right: 30),
                           child: TextFormField(
                             controller: _emailController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
-                              } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                  .hasMatch(value)) {
+                              } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
                                 return 'Please enter a valid email address';
                               }
                               return null;
                             },
                             decoration: InputDecoration(
                               filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide:
-                                      const BorderSide(color: Colors.red)),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                      color: Colors.red, width: 1.5)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
                               label: const Text("Enter Email"),
                               fillColor: Colors.white,
                               prefixIcon: Icon(
@@ -118,13 +98,11 @@ class _SignupPageState extends State<SignupPage> {
                                 Icons.email,
                                 color: Colors.red.shade900,
                               ),
-                              labelStyle: const TextStyle(
-                                  color: Colors.blue, fontSize: 12),
+                              labelStyle: const TextStyle(color: Colors.blue, fontSize: 12),
                             ),
                           )),
                       Padding(
-                          padding: const EdgeInsets.only(
-                              top: 15, left: 30, right: 30),
+                          padding: const EdgeInsets.only(top: 15, left: 30, right: 30),
                           child: TextFormField(
                             controller: _passwordController,
                             validator: (value) {
@@ -133,21 +111,14 @@ class _SignupPageState extends State<SignupPage> {
                               }
                               return null;
                             },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            keyboardType: TextInputType.number,
                             maxLength: 4,
                             decoration: InputDecoration(
                               enabled: true,
                               filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide:
-                                      const BorderSide(color: Colors.red)),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide:
-                                      const BorderSide(color: Colors.red)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
                               label: const Text("Enter four digit pin"),
                               fillColor: Colors.white,
                               prefixIcon: Icon(
@@ -155,48 +126,34 @@ class _SignupPageState extends State<SignupPage> {
                                 Icons.password,
                                 color: Colors.red.shade900,
                               ),
-                              labelStyle: const TextStyle(
-                                  color: Colors.blue, fontSize: 12),
+                              labelStyle: const TextStyle(color: Colors.blue, fontSize: 12),
                             ),
                           )),
                       Padding(
-                        padding:
-                            const EdgeInsets.only(top: 15, left: 30, right: 30),
+                        padding: const EdgeInsets.only(top: 15, left: 30, right: 30),
                         child: GestureDetector(
                           child: Container(
                             height: 45,
                             width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                border: Border.all(color: Colors.red),
-                                borderRadius: BorderRadius.circular(15)),
+                            decoration: BoxDecoration(color: Theme.of(context).primaryColor, border: Border.all(color: Colors.red), borderRadius: BorderRadius.circular(15)),
                             child: const Center(
                               child: Text(
                                 "SIGN UP",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
                               AppService.showLoader();
-                              UserModel? user = await AuthService.signUp(
-                                  UserModel(
-                                      status: "active",
-                                      name: _nameController.text,
-                                      email: _emailController.text,
-                                      pincode: _passwordController.text));
+                              UserModel? user = await AuthService.signUp(UserModel(status: "active", name: _nameController.text, email: _emailController.text, pincode: _passwordController.text));
                               AppService.hideLoader();
                               if (user != null) {
                                 Get.to(const LoginPage());
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      backgroundColor:
-                                          Theme.of(context).primaryColor,
+                                      backgroundColor: Theme.of(context).primaryColor,
                                       content: const Text(
                                         'Signup failed. Please try again.',
                                         style: TextStyle(color: Colors.black),
@@ -226,9 +183,7 @@ class _SignupPageState extends State<SignupPage> {
                     GestureDetector(
                       child: Text(
                         "LOGIN",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade700),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue.shade700),
                       ),
                       onTap: () {
                         Get.back();

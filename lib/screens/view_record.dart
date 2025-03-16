@@ -56,6 +56,8 @@ class ViewRecord extends StatelessWidget {
             return AttendanceRecord.fromMap(doc.data() as Map<String, dynamic>);
           }).toList();
 
+          attendanceRecords.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
           return ListView.builder(
             itemCount: attendanceRecords.length,
             itemBuilder: (context, index) {
@@ -64,12 +66,7 @@ class ViewRecord extends StatelessWidget {
                 //tileColor: Colors.blue,
                 title: Text(
                   'Date:    ${record.dateTime.toString()}',
-                  style: TextStyle(
-                      color: record.date ==
-                              DateFormat('yyyy-MM-dd').format(DateTime.now())
-                          ? Colors.blue
-                          : Colors.green.shade500,
-                      fontWeight: FontWeight.bold),
+                  style: TextStyle(color: record.date == DateFormat('yyyy-MM-dd').format(DateTime.now()) ? Colors.blue : Colors.green.shade500, fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
                   'Status: ${record.isInPremises ? 'Present' : 'Absent'}',
