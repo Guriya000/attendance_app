@@ -1,19 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AttendanceRecord {
-  final String userId;
-  final String date;
-  final String time;
-  final DateTime dateTime;
-  final bool isInPremises;
+  String? userId;
+  String? date;
+  String? time;
+  DateTime? dateTime;
+  bool? isInPremises;
+  String? className;
 
-  AttendanceRecord({
-    required this.userId,
-    required this.dateTime,
-    required this.date,
-    required this.time,
-    required this.isInPremises,
-  });
+  AttendanceRecord({this.userId, this.dateTime, this.date, this.time, this.isInPremises, this.className});
 
   factory AttendanceRecord.fromMap(Map<String, dynamic> data) {
     return AttendanceRecord(
@@ -22,6 +17,7 @@ class AttendanceRecord {
       isInPremises: data['isInPremises'],
       date: data.containsKey('date') ? data['date'] : null,
       time: data.containsKey('time') ? data['time'] : null,
+      className: data.containsKey('class') ? data['class'] : null,
     );
   }
 }
