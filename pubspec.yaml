@@ -41,6 +41,9 @@ dependencies:
   geolocator: ^13.0.2
   qr_code_scanner_plus: ^2.0.10+1
   slider_button: ^2.1.0
+  shared_preferences: ^2.5.2
+  email_sender: ^1.4.2
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +71,9 @@ flutter:
     - assets/signup.jpg
     - assets/login.jpg
     - assets/confirm.jpg
+    - assets/resetpin.jpg
+    - assets/girl.PNG
+    - assets/check.png
 
   #   - images/a_dot_ham.jpeg
 

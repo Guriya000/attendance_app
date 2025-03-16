@@ -1,14 +1,11 @@
-import 'package:attendance_app/screens/qr_scanner.dart';
 import 'package:attendance_app/services/attendance_services.dart';
 import 'package:attendance_app/services/auth_services.dart';
-
-import 'package:attendance_app/services/location_service.dart';
 import 'package:attendance_app/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:slider_button/slider_button.dart';
 
 import '../attendance_record_model.dart';
 import 'view_record.dart';
@@ -21,37 +18,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-// Get the current date
   DateTime now = DateTime.now();
-
-  // Format the date using the intl package
   String formattedDate = DateFormat('MMM dd,yyyy').format(DateTime.now());
-
-  // final AuthService _authService = AuthService();
-  final LocationService _locationService = LocationService();
-  final AttendanceService _attendanceService = AttendanceService();
-  final double buildingLat = 37.7749; // Example: San Francisco latitude
-  final double buildingLong = -122.4194;
-  final double radiusInMeters = 100; // 100 meters radius
-
-  RxInt totalPresent = 0.obs;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade300,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
         title: Text(
           "MARK ATTENDANCE ($formattedDate)",
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         actions: [
           IconButton(
               onPressed: () {
                 Get.to(() => ViewRecord());
               },
-              icon: const Icon(Icons.history))
+              icon: const Icon(
+                Icons.history,
+                color: Colors.black,
+              ))
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -70,7 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             final attendanceRecords = snapshot.data!.docs.map((doc) {
-              return AttendanceRecord.fromMap(doc.data() as Map<String, dynamic>);
+              return AttendanceRecord.fromMap(
+                  doc.data() as Map<String, dynamic>);
             }).toList();
 
             attendanceRecords.sort((a, b) => b.dateTime.compareTo(a.dateTime));
@@ -84,24 +74,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           attendanceRecords.length.toString(),
-                          style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold),
                         ),
-                        Text(
+                        const Text(
                           "Total Present Today",
-                          style: TextStyle(color: Colors.green.shade900, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
                         )
                       ],
                     ))
                   ],
                 ),
-                const Divider(),
+                Divider(
+                  color: Theme.of(context).primaryColor,
+                ),
                 Expanded(
                     child: ListView.builder(
                   itemCount: attendanceRecords.length,
                   itemBuilder: (context, index) {
-                    AttendanceRecord attendanceRecord = attendanceRecords[index];
+                    AttendanceRecord attendanceRecord =
+                        attendanceRecords[index];
                     return FutureBuilder(
-                        future: AuthService.getUserById(attendanceRecord.userId),
+                        future:
+                            AuthService.getUserById(attendanceRecord.userId),
                         builder: (context, snapshot) {
                           String name = attendanceRecord.userId;
                           if (snapshot.hasData) {
@@ -114,22 +112,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             leading: Container(
                               height: 50,
                               width: 50,
-                              decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(100)),
+                              decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(100)),
                               child: Center(
                                 child: Text(
                                   "${name.split(' ').first[0]}${name.split(' ').length > 1 ? name.split(' ').last[0] : ""}",
-                                  style: const TextStyle(fontSize: 16),
+                                  style: const TextStyle(
+                                      fontSize: 16, color: Colors.white),
                                 ),
                               ),
                             ),
-                            title: Text(name),
+                            title: Text(
+                              name,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Status: ${attendanceRecord.isInPremises ? "In Premises" : "Outside Premises"}'),
                                 Text(
-                                  DateFormat('hh:mm:ss').format(attendanceRecord.dateTime),
-                                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                  'Status: ${attendanceRecord.isInPremises ? "In" : "Out"}',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                Text(
+                                  DateFormat('hh:mm:ss')
+                                      .format(attendanceRecord.dateTime),
+                                  style: const TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -141,24 +151,31 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }),
       floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: Colors.blue,
+          backgroundColor: Theme.of(context).primaryColor,
           onPressed: () async {
             // Get.to(() => QrScanner());
-            if (await AttendanceService.markAttendance()) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Attendance marked successfully!"),
-                backgroundColor: Colors.green,
+            if (await AttendanceService.markAttendance(
+                AuthService.getCurrentUser()!.id.toString())) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: const Text(
+                  "Attendance marked successfully!",
+                  style: TextStyle(color: Colors.black),
+                ),
+                backgroundColor: Theme.of(context).primaryColor,
               ));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text("Error marking attendance!"),
+                content: Text(
+                  "Error marking attendance!",
+                  style: TextStyle(color: Colors.white),
+                ),
                 backgroundColor: Colors.red,
               ));
             }
           },
           label: const Text(
             "Mark Attendance",
-            style: TextStyle(color: Colors.white, fontSize: 14),
+            style: TextStyle(color: Colors.black, fontSize: 14),
           )),
     );
   }

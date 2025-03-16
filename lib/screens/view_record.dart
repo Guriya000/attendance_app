@@ -13,16 +13,29 @@ class ViewRecord extends StatelessWidget {
     if (userId == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Attendance Records'),
+          backgroundColor: Theme.of(context).primaryColor,
+          centerTitle: true,
+          title: const Text(
+            'Attendance Records',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
         body: const Center(
-          child: Text('User not logged in.'),
+          child: Text(
+            'User not logged in.',
+            style: TextStyle(color: Colors.red),
+          ),
         ),
       );
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Attendance Records'),
+        backgroundColor: Theme.of(context).primaryColor,
+        centerTitle: true,
+        title: const Text(
+          'Attendance Records',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: AttendanceService.getAttendanceRecords(userId),
@@ -48,11 +61,20 @@ class ViewRecord extends StatelessWidget {
             itemBuilder: (context, index) {
               final record = attendanceRecords[index];
               return ListTile(
+                //tileColor: Colors.blue,
                 title: Text(
-                  'Date: ${record.dateTime.toString()}',
-                  style: TextStyle(color: record.date == DateFormat('dd-MM-yyyy').format(DateTime.now()) ? Colors.green.shade800 : null),
+                  'Date:    ${record.dateTime.toString()}',
+                  style: TextStyle(
+                      color: record.date ==
+                              DateFormat('yyyy-MM-dd').format(DateTime.now())
+                          ? Colors.blue
+                          : Colors.green.shade500,
+                      fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text('Status: ${record.isInPremises ? "In-Premises" : "Outside-Premises"}'),
+                subtitle: Text(
+                  'Status: ${record.isInPremises ? 'Present' : 'Absent'}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               );
             },
           );

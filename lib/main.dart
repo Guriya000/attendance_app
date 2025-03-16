@@ -1,18 +1,14 @@
+import 'package:attendance_app/screens/dashboard_screen.dart';
 import 'package:attendance_app/screens/login_page.dart';
-import 'package:attendance_app/screens/qr_scanner.dart';
-import 'package:attendance_app/screens/signup_page.dart';
+import 'package:attendance_app/screens/reset_pin_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -24,7 +20,13 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
+      theme: ThemeData(
+          inputDecorationTheme:
+              const InputDecorationTheme(focusColor: Colors.red),
+          scaffoldBackgroundColor: Colors.white,
+          primaryColor: Colors.deepOrange.shade200),
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
       home: LoginPage(),
     );
   }
