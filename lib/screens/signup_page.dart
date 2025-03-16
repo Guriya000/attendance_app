@@ -111,7 +111,7 @@ class _SignupPageState extends State<SignupPage> {
                               }
                               return null;
                             },
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                             keyboardType: TextInputType.number,
                             maxLength: 4,
                             decoration: InputDecoration(

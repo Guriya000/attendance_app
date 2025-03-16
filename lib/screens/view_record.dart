@@ -70,7 +70,7 @@ class ViewRecord extends StatelessWidget {
                 ),
                 subtitle: Text(
                   'Status: ${record.isInPremises ? 'Present' : 'Absent'}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
             },

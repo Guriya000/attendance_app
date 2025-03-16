@@ -1,3 +1,4 @@
+import 'package:attendance_app/screens/login_page.dart';
 import 'package:attendance_app/services/app_service.dart';
 import 'package:attendance_app/services/attendance_services.dart';
 import 'package:attendance_app/services/auth_services.dart';
@@ -40,6 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(
                 Icons.history,
                 color: Colors.black,
+              )),
+          IconButton(
+              onPressed: () {
+                Get.offAll(() => const LoginPage());
+              },
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.white,
               ))
         ],
       ),
