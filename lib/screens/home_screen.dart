@@ -1,3 +1,5 @@
+import 'package:attendance_app/screens/login_page.dart';
+import 'package:attendance_app/screens/qr_scanner.dart';
 import 'package:attendance_app/services/app_service.dart';
 import 'package:attendance_app/services/attendance_services.dart';
 import 'package:attendance_app/services/auth_services.dart';
@@ -21,6 +23,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime now = DateTime.now();
   String formattedDate = DateFormat('MMM dd,yyyy').format(DateTime.now());
+
+  DateTime? selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedDate = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   doc.data() as Map<String, dynamic>);
             }).toList();
 
-            attendanceRecords.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+            attendanceRecords
+                .sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
 
             return Column(
               children: [

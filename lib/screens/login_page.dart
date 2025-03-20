@@ -10,7 +10,8 @@ import 'package:get/get.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final String? refEmail;
+  const LoginPage({super.key, this.refEmail});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -45,7 +46,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _loadSavedEmail();
+    if (widget.refEmail != null) {
+      _emailController.text = widget.refEmail.toString();
+    } else {
+      _loadSavedEmail();
+    }
   }
 
   @override
@@ -121,6 +126,15 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           keyboardType: TextInputType.number,
                           focusNode: _passwordFocusNode,
+                          maxLength: 4,
+                          onChanged: (value) {
+                            if (value.length == 4) {
+                              _login();
+                            }
+                          },
+                          onEditingComplete: () async {
+                            _login();
+                          },
                           decoration: InputDecoration(
                             filled: true,
                             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
@@ -150,17 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         onTap: () async {
-                          if (_formKey.currentState!.validate()) {
-                            AppService.showLoader(message: "Signing in...");
-                            UserModel? user = await AuthService.signIn(
-                              _emailController.text,
-                              _passwordController.text,
-                            );
-                            AppService.hideLoader();
-                            if (user != null) {
-                              Get.offAll(const HomeScreen());
-                            }
-                          }
+                          await _login();
                         },
                       ),
                     ),
@@ -235,5 +239,19 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      AppService.showLoader(message: "Signing in...");
+      UserModel? user = await AuthService.signIn(
+        _emailController.text,
+        _passwordController.text,
+      );
+      AppService.hideLoader();
+      if (user != null) {
+        Get.offAll(const HomeScreen());
+      }
+    }
   }
 }

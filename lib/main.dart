@@ -2,6 +2,7 @@ import 'package:attendance_app/screens/dashboard_screen.dart';
 import 'package:attendance_app/screens/login_page.dart';
 import 'package:attendance_app/screens/reset_pin_screen.dart';
 import 'package:attendance_app/services/attendance_services.dart';
+import 'package:email_otp/email_otp.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,14 @@ void main() async {
   await GetStorage.init();
   await Firebase.initializeApp();
   AttendanceService.getAppSettings();
+  EmailOTP.config(
+    appName: 'PresentSir',
+    otpType: OTPType.numeric,
+    expiry: 30000,
+    emailTheme: EmailTheme.v6,
+    appEmail: 'heyy@presentsir.com',
+    otpLength: 6,
+  );
   runApp(const MyApp());
 }
 
@@ -22,7 +31,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'PresentSir',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           inputDecorationTheme:
@@ -31,7 +40,7 @@ class MyApp extends StatelessWidget {
           primaryColor: const Color.fromARGB(255, 213, 128, 103)),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: DashboardScreen(),
+      home: LoginPage(),
     );
   }
 }

@@ -36,6 +36,14 @@ class ViewRecord extends StatelessWidget {
           'Attendance Records',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
         ),
+        actions: [
+          // IconButton(
+          //     onPressed: () {},
+          //     icon: const Icon(
+          //       Icons.calendar_month,
+          //       color: Colors.purple,
+          //     ))
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: AttendanceService.getAttendanceRecords(userId),
@@ -56,7 +64,7 @@ class ViewRecord extends StatelessWidget {
             return AttendanceRecord.fromMap(doc.data() as Map<String, dynamic>);
           }).toList();
 
-          attendanceRecords.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+          attendanceRecords.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
 
           return ListView.builder(
             itemCount: attendanceRecords.length,
@@ -64,13 +72,35 @@ class ViewRecord extends StatelessWidget {
               final record = attendanceRecords[index];
               return ListTile(
                 //tileColor: Colors.blue,
-                title: Text(
-                  'Date:    ${record.dateTime.toString()}',
-                  style: TextStyle(color: record.date == DateFormat('yyyy-MM-dd').format(DateTime.now()) ? Colors.blue : Colors.green.shade500, fontWeight: FontWeight.bold),
+                title: RichText(
+                  text: TextSpan(
+                    text: 'Date: ',
+                    style: DefaultTextStyle.of(context).style,
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: record.dateTime.toString(),
+                        style: TextStyle(
+                          color: record.date == DateFormat('yyyy-MM-dd').format(DateTime.now()) ? Colors.blue : Colors.grey.shade500,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                subtitle: Text(
-                  'Status: ${record.isInPremises ? 'Present' : 'Absent'}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                subtitle: RichText(
+                  text: TextSpan(
+                    text: 'Status: ',
+                    style: DefaultTextStyle.of(context).style,
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: record.isInPremises == true ? 'In-premises' : 'Outside-premises',
+                        style: TextStyle(
+                          color: record.isInPremises == true ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

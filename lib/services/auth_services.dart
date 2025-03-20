@@ -14,6 +14,15 @@ class AuthService {
   // Sign up with email and password
   static Future<UserModel?> signUp(UserModel userModel) async {
     try {
+      if (await getUserByEmail(userModel.email.toString()) != null) {
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text("A user already exist with this email."),
+          ),
+        );
+        return null;
+      }
       DocumentReference userRef = await _firestore.collection('users').add(userModel.toJson());
       userModel.id = userRef.id;
       currentLoginUser = userModel;
@@ -89,7 +98,7 @@ class AuthService {
   }
 
   // Get user by email
-  Future<UserModel?> getUserByEmail(String email) async {
+  static Future<UserModel?> getUserByEmail(String email) async {
     try {
       DocumentSnapshot documentSnapshot = await _firestore.collection('users').doc(email).get();
 

@@ -13,12 +13,12 @@ class AttendanceService {
   static double checkMeter = 0;
 
   // Mark attendance
-  static Future<bool> markAttendance(String userId) async {
+  static Future<bool> markAttendance(String userId, [String? className]) async {
     // double latitude = 33.418816;
     // double longitude = 73.223078;
 
     if (AuthService.getCurrentUser() != null) {
-      if (await hasMarkedAttendanceToday(AuthService.getCurrentUser()!.id.toString()) && false) {
+      if (await hasMarkedAttendanceToday(AuthService.getCurrentUser()!.id.toString())) {
         ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(
           content: Text(
             "You have already marked your attendance for today!",
@@ -30,13 +30,7 @@ class AttendanceService {
       }
       bool isUserInPremises = await LocationService.isUserInPremises(checkLatitude, checkLongitude, checkMeter);
       DateTime now = DateTime.now();
-      await _firestore.collection('attendance').add({
-        'userId': AuthService.getCurrentUser()!.id.toString(),
-        'dateTime': now,
-        'date': DateFormat('yyyy-MM-dd').format(now),
-        'time': DateFormat('hh:mm:ss').format(now),
-        'isInPremises': isUserInPremises,
-      });
+      await _firestore.collection('attendance').add({'userId': AuthService.getCurrentUser()!.id.toString(), 'dateTime': now, 'date': DateFormat('yyyy-MM-dd').format(now), 'time': DateFormat('hh:mm:ss').format(now), 'isInPremises': isUserInPremises, 'class': className});
       return true;
     } else {
       return false;
@@ -67,8 +61,8 @@ class AttendanceService {
     }
   }
 
-  static Stream<QuerySnapshot> getTodaysPresentUsers() {
-    return _firestore.collection('attendance').where('date', isEqualTo: DateFormat('yyyy-MM-dd').format(DateTime.now())).snapshots();
+  static Stream<QuerySnapshot> getTodaysPresentUsers({DateTime? date}) {
+    return _firestore.collection('attendance').where('date', isEqualTo: DateFormat('yyyy-MM-dd').format(date ?? DateTime.now())).snapshots();
   }
 
   static Future<void> markAttendanceWithLocation(String userId) async {
