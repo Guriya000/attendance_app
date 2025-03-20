@@ -20,9 +20,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
-      body: const Column(children: [
-        Text('Welcome to the dashboard!'),
-      ]),
       drawer: Drawer(
         backgroundColor: Theme.of(context).primaryColor,
         child: ListView(
@@ -32,31 +29,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
               decoration: BoxDecoration(
                 color: Colors.blue.shade200,
               ),
-              child: Text(
+              child: const Text(
                 'Menu',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 24,
                 ),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
+              leading: const Icon(
+                Icons.home,
+                color: Colors.black,
+              ),
+              title: const Text(
+                'Home',
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              leading: const Icon(Icons.settings, color: Colors.black),
+              title: const Text('Settings',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
               onTap: () {
                 Navigator.pop(context);
+                
               },
             ),
             ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
+              leading: const Icon(Icons.logout, color: Colors.black),
+              title: const Text('Logout',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -64,6 +73,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
+      body: Column(children: [
+        const SizedBox(
+          height: 5,
+        ),
+        const Center(
+            child: Text(
+          'Welcome to the dashboard!',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            height: 200,
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(20)),
+            child: const Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.home,
+                        color: Colors.black,
+                        size: 20,
+                      ),
+                      Text("Dashboard",
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        )
+      ]),
     );
   }
 }

@@ -30,7 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         title: Text(
           "MARK ATTENDANCE ($formattedDate)",
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         ),
         actions: [
           IconButton(
@@ -59,7 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             final attendanceRecords = snapshot.data!.docs.map((doc) {
-              return AttendanceRecord.fromMap(doc.data() as Map<String, dynamic>);
+              return AttendanceRecord.fromMap(
+                  doc.data() as Map<String, dynamic>);
             }).toList();
 
             attendanceRecords.sort((a, b) => b.dateTime.compareTo(a.dateTime));
@@ -73,11 +75,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           attendanceRecords.length.toString(),
-                          style: const TextStyle(color: Colors.red, fontSize: 50, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold),
                         ),
                         const Text(
                           "Total Present Today",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
                         )
                       ],
                     ))
@@ -90,9 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListView.builder(
                   itemCount: attendanceRecords.length,
                   itemBuilder: (context, index) {
-                    AttendanceRecord attendanceRecord = attendanceRecords[index];
+                    AttendanceRecord attendanceRecord =
+                        attendanceRecords[index];
                     return FutureBuilder(
-                        future: AuthService.getUserById(attendanceRecord.userId),
+                        future:
+                            AuthService.getUserById(attendanceRecord.userId),
                         builder: (context, snapshot) {
                           String name = attendanceRecord.userId;
                           if (snapshot.hasData) {
@@ -105,28 +113,38 @@ class _HomeScreenState extends State<HomeScreen> {
                             leading: Container(
                               height: 50,
                               width: 50,
-                              decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(100)),
+                              decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(100)),
                               child: Center(
                                 child: Text(
                                   "${name.split(' ').first[0]}${name.split(' ').length > 1 ? name.split(' ').last[0] : ""}",
-                                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                                  style: const TextStyle(
+                                      fontSize: 16, color: Colors.white),
                                 ),
                               ),
                             ),
                             title: Text(
                               name,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Status: ${attendanceRecord.isInPremises ? "In-premises" : "Outside-premises"}',
-                                  style: TextStyle(color: attendanceRecord.isInPremises ? Colors.green : Colors.red),
+                                  style: TextStyle(
+                                      color: attendanceRecord.isInPremises
+                                          ? Colors.green
+                                          : Colors.red),
                                 ),
                                 Text(
-                                  DateFormat('hh:mm:ss').format(attendanceRecord.dateTime),
-                                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                  DateFormat('hh:mm:ss')
+                                      .format(attendanceRecord.dateTime),
+                                  style: const TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -142,7 +160,8 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () async {
             // Get.to(() => QrScanner());
             AppService.showLoader();
-            if (await AttendanceService.markAttendance(AuthService.getCurrentUser()!.id.toString())) {
+            if (await AttendanceService.markAttendance(
+                AuthService.getCurrentUser()!.id.toString())) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: const Text(
                   "Attendance marked successfully!",

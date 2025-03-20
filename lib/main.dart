@@ -24,10 +24,14 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(inputDecorationTheme: const InputDecorationTheme(focusColor: Colors.red), scaffoldBackgroundColor: Colors.white, primaryColor: Colors.deepOrange.shade200),
+      theme: ThemeData(
+          inputDecorationTheme:
+              const InputDecorationTheme(focusColor: Colors.red),
+          scaffoldBackgroundColor: Colors.white,
+          primaryColor: const Color.fromARGB(255, 213, 128, 103)),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      home: LoginPage(),
+      home: DashboardScreen(),
     );
   }
 }
