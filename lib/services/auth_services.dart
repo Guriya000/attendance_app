@@ -23,7 +23,8 @@ class AuthService {
         );
         return null;
       }
-      DocumentReference userRef = await _firestore.collection('users').add(userModel.toJson());
+      DocumentReference userRef =
+          await _firestore.collection('users').add(userModel.toJson());
       userModel.id = userRef.id;
       currentLoginUser = userModel;
       return currentLoginUser;
@@ -39,7 +40,11 @@ class AuthService {
     String pincode,
   ) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('users').where('email', isEqualTo: email).where('pincode', isEqualTo: pincode).get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .where('pincode', isEqualTo: pincode)
+          .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
@@ -81,7 +86,8 @@ class AuthService {
   // Get user by ID
   static Future<UserModel?> getUserById(String id) async {
     try {
-      DocumentSnapshot documentSnapshot = await _firestore.collection('users').doc(id).get();
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection('users').doc(id).get();
 
       if (documentSnapshot.exists) {
         var userData = documentSnapshot.data() as Map<String, dynamic>;
@@ -100,7 +106,8 @@ class AuthService {
   // Get user by email
   static Future<UserModel?> getUserByEmail(String email) async {
     try {
-      DocumentSnapshot documentSnapshot = await _firestore.collection('users').doc(email).get();
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection('users').doc(email).get();
 
       if (documentSnapshot.exists) {
         var userData = documentSnapshot.data() as Map<String, dynamic>;
@@ -108,12 +115,14 @@ class AuthService {
 
         return UserModel.fromJson(userData);
       } else {
-        ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(content: Text("No user found with the provided email.")));
+        ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(
+            content: Text("No user found with the provided email.")));
 
         return null;
       }
     } catch (e) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(content: Text("Error fetching user by email: $e")));
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(content: Text("Error fetching user by email: $e")));
 
       return null;
     }

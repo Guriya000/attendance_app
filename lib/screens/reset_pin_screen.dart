@@ -27,7 +27,11 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
 
     try {
       // Query Firestore to check if the user exists
-      final querySnapshot = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: email).limit(1).get();
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         // Step 3: Send OTP to the user's email
@@ -64,11 +68,18 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
       final email = _emailController.text.trim();
 
       try {
-        final querySnapshot = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: email).limit(1).get();
+        final querySnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .limit(1)
+            .get();
 
         if (querySnapshot.docs.isNotEmpty) {
           final userId = querySnapshot.docs.first.id;
-          await FirebaseFirestore.instance.collection('users').doc(userId).update({'pincode': newPin});
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .update({'pincode': newPin});
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('PIN updated successfully')),
@@ -125,8 +136,13 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                 controller: _emailController,
                 readOnly: _isOTPSent,
                 decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: const BorderSide(color: Colors.red)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide:
+                          const BorderSide(color: Colors.red, width: 1.5)),
                   label: const Text(
                     "Enter Your Email",
                     style: TextStyle(color: Colors.blue, fontSize: 12),
@@ -147,15 +163,20 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                   keyboardType: TextInputType.number,
                   maxLength: 6,
                   decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: const BorderSide(color: Colors.red)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            const BorderSide(color: Colors.red, width: 1.5)),
                     label: const Text(
                       "Enter OTP",
                       style: TextStyle(color: Colors.blue, fontSize: 12),
                     ),
                     prefixIcon: Icon(
                       size: 16,
-                      Icons.email,
+                      Icons.pin,
                       color: Colors.red.shade900,
                     ),
                   ),
@@ -169,15 +190,20 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                   keyboardType: TextInputType.number,
                   maxLength: 4,
                   decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Colors.red, width: 1.5)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: const BorderSide(color: Colors.red)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide:
+                            const BorderSide(color: Colors.red, width: 1.5)),
                     label: const Text(
                       "Enter New PIN",
                       style: TextStyle(color: Colors.blue, fontSize: 12),
                     ),
                     prefixIcon: Icon(
                       size: 16,
-                      Icons.email,
+                      Icons.password,
                       color: Colors.red.shade900,
                     ),
                   ),
@@ -189,11 +215,23 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                 child: Container(
                   height: 45,
                   width: double.infinity,
-                  decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.grey.shade300, offset: const Offset(1, 1.5), spreadRadius: 1)], color: Theme.of(context).primaryColor, border: Border.all(color: Colors.red), borderRadius: BorderRadius.circular(15)),
+                  decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey.shade300,
+                            offset: const Offset(1, 1.5),
+                            spreadRadius: 1)
+                      ],
+                      color: Theme.of(context).primaryColor,
+                      border: Border.all(color: Colors.red),
+                      borderRadius: BorderRadius.circular(15)),
                   child: Center(
                     child: Text(
                       _isOTPSent ? "Reset PIN" : "Continue",
-                      style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

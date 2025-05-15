@@ -37,10 +37,10 @@ class MyApp extends StatelessWidget {
           inputDecorationTheme:
               const InputDecorationTheme(focusColor: Colors.red),
           scaffoldBackgroundColor: Colors.white,
-          primaryColor: const Color.fromARGB(255, 213, 128, 103)),
-      darkTheme: ThemeData.dark(),
+          primaryColor: const Color.fromARGB(255, 224, 131, 97)),
+      darkTheme: ThemeData.fallback(),
       themeMode: ThemeMode.system,
-      home: LoginPage(),
+      home: LoginPage(), // Change this to your desired screen
     );
   }
 }

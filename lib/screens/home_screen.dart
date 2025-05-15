@@ -1,12 +1,10 @@
-import 'package:attendance_app/screens/login_page.dart';
-import 'package:attendance_app/screens/qr_scanner.dart';
 import 'package:attendance_app/services/app_service.dart';
 import 'package:attendance_app/services/attendance_services.dart';
 import 'package:attendance_app/services/auth_services.dart';
 import 'package:attendance_app/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -112,9 +110,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         attendanceRecords[index];
                     return FutureBuilder(
                         future:
-                            AuthService.getUserById(attendanceRecord.userId),
+                            AuthService.getUserById(attendanceRecord.userId!),
                         builder: (context, snapshot) {
-                          String name = attendanceRecord.userId;
+                          String name = attendanceRecord.userId!;
                           if (snapshot.hasData) {
                             UserModel? user = snapshot.data;
                             if (user != null) {
@@ -126,13 +124,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 50,
                               width: 50,
                               decoration: BoxDecoration(
-                                  color: Colors.blue,
+                                  color: const Color.fromARGB(255, 154, 16, 16),
                                   borderRadius: BorderRadius.circular(100)),
                               child: Center(
                                 child: Text(
                                   "${name.split(' ').first[0]}${name.split(' ').length > 1 ? name.split(' ').last[0] : ""}",
                                   style: const TextStyle(
-                                      fontSize: 16, color: Colors.white),
+                                      fontSize: 20, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -145,15 +143,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Status: ${attendanceRecord.isInPremises ? "In-premises" : "Outside-premises"}',
+                                  'Status: ${attendanceRecord.isInPremises! ? "In-premises" : "Outside-premises"}',
                                   style: TextStyle(
-                                      color: attendanceRecord.isInPremises
+                                      color: attendanceRecord.isInPremises!
                                           ? Colors.green
                                           : Colors.red),
                                 ),
                                 Text(
                                   DateFormat('hh:mm:ss')
-                                      .format(attendanceRecord.dateTime),
+                                      .format(attendanceRecord.dateTime!),
                                   style: const TextStyle(
                                       color: Colors.green,
                                       fontWeight: FontWeight.bold),

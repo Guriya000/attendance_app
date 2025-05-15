@@ -36,14 +36,6 @@ class ViewRecord extends StatelessWidget {
           'Attendance Records',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
         ),
-        actions: [
-          // IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.calendar_month,
-          //       color: Colors.purple,
-          //     ))
-        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: AttendanceService.getAttendanceRecords(userId),
@@ -70,36 +62,60 @@ class ViewRecord extends StatelessWidget {
             itemCount: attendanceRecords.length,
             itemBuilder: (context, index) {
               final record = attendanceRecords[index];
-              return ListTile(
-                //tileColor: Colors.blue,
-                title: RichText(
-                  text: TextSpan(
-                    text: 'Date: ',
-                    style: DefaultTextStyle.of(context).style,
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: record.dateTime.toString(),
-                        style: TextStyle(
-                          color: record.date == DateFormat('yyyy-MM-dd').format(DateTime.now()) ? Colors.blue : Colors.grey.shade500,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  tileColor: Colors.deepOrange.shade100,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: Colors.red.shade900,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-                subtitle: RichText(
-                  text: TextSpan(
-                    text: 'Status: ',
-                    style: DefaultTextStyle.of(context).style,
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: record.isInPremises == true ? 'In-premises' : 'Outside-premises',
-                        style: TextStyle(
-                          color: record.isInPremises == true ? Colors.green : Colors.red,
+                  title: RichText(
+                    text: TextSpan(
+                      text: 'Date:  ',
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: record.dateTime.toString(),
+                          style: TextStyle(
+                            color: record.date ==
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(DateTime.now())
+                                ? Colors.blue
+                                : Colors.grey.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                  subtitle: RichText(
+                    text: TextSpan(
+                      text: 'Status:  ',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: record.isInPremises == true
+                              ? 'In-premises'
+                              : 'Outside-premises',
+                          style: TextStyle(
+                            color: record.isInPremises == true
+                                ? Colors.green
+                                : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
