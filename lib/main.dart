@@ -34,10 +34,13 @@ class MyApp extends StatelessWidget {
       title: 'PresentSir',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          inputDecorationTheme:
-              const InputDecorationTheme(focusColor: Colors.red),
-          scaffoldBackgroundColor: Colors.white,
-          primaryColor: const Color.fromARGB(255, 224, 131, 97)),
+        inputDecorationTheme:
+            const InputDecorationTheme(focusColor: Colors.red),
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: Colors.grey.shade300,
+        //  primaryColor: const Color.fromARGB(255, 224, 131, 97),
+        secondaryHeaderColor: Colors.red.shade900,
+      ),
       darkTheme: ThemeData.fallback(),
       themeMode: ThemeMode.system,
       home: LoginPage(), // Change this to your desired screen

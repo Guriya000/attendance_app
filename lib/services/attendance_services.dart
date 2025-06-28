@@ -20,12 +20,12 @@ class AttendanceService {
     if (AuthService.getCurrentUser() != null) {
       if (await hasMarkedAttendanceToday(
           AuthService.getCurrentUser()!.id.toString())) {
-        ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(
-          content: Text(
+        ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
+          content: const Text(
             "You have already marked your attendance for today!",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(Get.context!).primaryColor,
         ));
         return false;
       }

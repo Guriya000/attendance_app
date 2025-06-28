@@ -41,16 +41,22 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('OTP sent to your email')),
+          SnackBar(
+              backgroundColor: Theme.of(context).primaryColor,
+              content: const Text('OTP sent to your email')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User does not exist')),
+          SnackBar(
+              backgroundColor: Theme.of(context).primaryColor,
+              content: const Text('User does not exist')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            content: Text('Error: $e')),
       );
     }
     AppService.hideLoader();
@@ -82,24 +88,32 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
               .update({'pincode': newPin});
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('PIN updated successfully')),
+            SnackBar(
+                backgroundColor: Theme.of(context).primaryColor,
+                content: const Text('PIN updated successfully')),
           );
           Get.offAll(() => LoginPage(
                 refEmail: _emailController.text,
               ));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('User not found')),
+            SnackBar(
+                backgroundColor: Theme.of(context).primaryColor,
+                content: const Text('User not found')),
           );
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating PIN: $e')),
+          SnackBar(
+              backgroundColor: Theme.of(context).primaryColor,
+              content: Text('Error updating PIN: $e')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid OTP')),
+        SnackBar(
+            backgroundColor: Theme.of(context).primaryColor,
+            content: const Text('Invalid OTP')),
       );
     }
     AppService.hideLoader();
@@ -213,24 +227,24 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
               padding: const EdgeInsets.only(top: 15, left: 30, right: 30),
               child: GestureDetector(
                 child: Container(
-                  height: 45,
+                  height: 50,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey.shade300,
-                            offset: const Offset(1, 1.5),
-                            spreadRadius: 1)
-                      ],
-                      color: Theme.of(context).primaryColor,
-                      border: Border.all(color: Colors.red),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.red.shade900,
+                          Colors.blue,
+                          Colors.deepOrange.shade400,
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(15)),
                   child: Center(
                     child: Text(
-                      _isOTPSent ? "Reset PIN" : "Continue",
+                      _isOTPSent ? "Reset PIN" : "CONTINUE",
                       style: const TextStyle(
+                          letterSpacing: 2,
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold),
                     ),
                   ),

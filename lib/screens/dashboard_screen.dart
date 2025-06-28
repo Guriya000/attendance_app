@@ -97,54 +97,230 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<Map<String, Map<String, dynamic>>>
       fetchCompanyWeeklyAttendance() async {
     final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 7));
+    // Start of week (Monday)
+    final startOfWeek = DateTime(now.year, now.month, now.day)
+        .subtract(Duration(days: now.weekday - 1));
+    // End of week (Sunday)
+    final endOfWeek = startOfWeek
+        .add(const Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
+
+    // Get all user IDs
+    final allUserIds = await _getAllUserIds();
+
+    // Query all attendance records for this week
+    final attendanceSnapshot = await FirebaseFirestore.instance
+        .collection('attendance')
+        .where('dateTime',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfWeek))
+        .where('dateTime',
+            isLessThan:
+                Timestamp.fromDate(endOfWeek.add(const Duration(days: 1))))
+        .get();
+
+    // Prepare data for each day of the week
+    List<double> dailyPercentages = List.filled(7, 0.0);
+
+    for (int i = 0; i < 7; i++) {
+      final day = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day)
+          .add(Duration(days: i));
+      int presentCount = 0;
+      for (final userId in allUserIds) {
+        // Find attendance record for this user on this day
+        final userAttendance = attendanceSnapshot.docs.where((doc) {
+          final docDate = (doc['dateTime'] as Timestamp).toDate();
+          return doc['userId']?.toString().trim() == userId &&
+              docDate.year == day.year &&
+              docDate.month == day.month &&
+              docDate.day == day.day;
+        });
+
+        if (userAttendance.isNotEmpty &&
+            userAttendance.first['isInPremises'] == true &&
+            _isValidCheckIn(userAttendance.first)) {
+          presentCount++;
+        }
+        // If userAttendance is empty, count as absent (do nothing, since presentCount only increments for present)
+      }
+      // Always divide by total number of users to get correct percentage
+      dailyPercentages[i] = allUserIds.isNotEmpty
+          ? (presentCount / allUserIds.length) * 100
+          : 0.0;
+    }
+
+    // Calculate today's percentage attendance
+    final todayIndex = now.weekday - 1;
+    final todayPercentage = (todayIndex >= 0 && todayIndex < 7)
+        ? dailyPercentages[todayIndex]
+        : 0.0;
+
+    // Return a map with a single key for company-wide data
+    return {
+      'company': {
+        'attendancePercentage': dailyPercentages,
+        'todayPercentage': todayPercentage,
+      }
+    };
+  }
+
+  Future<List<double>> fetchDailyAttendancePercentages() async {
+    final now = DateTime.now();
+    // Set Monday as the start of the week, Sunday as the last day
+    final int currentWeekday = now.weekday; // Monday = 1, Sunday = 7
+    final DateTime startOfWeek =
+        now.subtract(Duration(days: currentWeekday - 1));
+    final DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+
+    final allUserIds = await _getAllUserIds();
 
     final attendanceSnapshot = await FirebaseFirestore.instance
         .collection('attendance')
         .where('dateTime',
             isGreaterThanOrEqualTo: Timestamp.fromDate(startOfWeek))
-        .where('dateTime', isLessThanOrEqualTo: Timestamp.fromDate(endOfWeek))
+        .where('dateTime',
+            isLessThan:
+                Timestamp.fromDate(endOfWeek.add(const Duration(days: 1))))
         .get();
 
-    final allUserIds = await _getAllUserIds();
+    List<double> dailyPercentages = List.filled(7, 0.0);
 
-    final weeklyAttendance = <String, Map<String, dynamic>>{};
+    for (int i = 0; i < 7; i++) {
+      final day = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day)
+          .add(Duration(days: i));
+      int presentCount = 0;
+      for (final userId in allUserIds) {
+        final userAttendance = attendanceSnapshot.docs.where((doc) {
+          final docDate = (doc['dateTime'] as Timestamp).toDate();
+          return doc['userId']?.toString().trim() == userId &&
+              docDate.year == day.year &&
+              docDate.month == day.month &&
+              docDate.day == day.day;
+        });
 
-    for (final userId in allUserIds) {
-      final userAttendance = attendanceSnapshot.docs.where(
-        (doc) => doc['userId']?.toString().trim() == userId,
-      );
-
-      final present = List<int>.filled(7, 0);
-      final absent = List<int>.filled(7, 0);
-
-      for (final doc in userAttendance) {
-        final dateTime = (doc['dateTime'] as Timestamp).toDate();
-        final dayIndex = dateTime.weekday - 1;
-
-        if (dayIndex >= 0 && dayIndex < 7) {
-          if (doc['isInPremises'] == true && _isValidCheckIn(doc)) {
-            present[dayIndex]++;
-          } else {
-            absent[dayIndex]++;
-          }
+        if (userAttendance.isNotEmpty &&
+            userAttendance.first['isInPremises'] == true &&
+            _isValidCheckIn(userAttendance.first)) {
+          presentCount++;
         }
       }
-
-      final attendancePercentage = List.generate(7, (index) {
-        final total = present[index] + absent[index];
-        return total > 0 ? (present[index] / total) * 100 : 0.0;
-      });
-
-      weeklyAttendance[userId] = {
-        'present': present,
-        'absent': absent,
-        'attendancePercentage': attendancePercentage,
-      };
+      dailyPercentages[i] = allUserIds.isNotEmpty
+          ? (presentCount / allUserIds.length) * 100
+          : 0.0;
     }
+    // If today is Monday, yesterday is Sunday (index 6)
+    // If today is Sunday, yesterday is Saturday (index 5)
+    // The bar chart will now always show all 7 days, including yesterday
+    return dailyPercentages;
+  }
 
-    return weeklyAttendance;
+  // Widget to display attendance percentage of each day on a bar chart
+  Widget buildAttendanceBarChart() {
+    return FutureBuilder<List<double>>(
+      future: fetchDailyAttendancePercentages(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              color: Colors.red.shade900,
+            ),
+          );
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+        if (!snapshot.hasData || snapshot.data!.length < 7) {
+          return const Center(
+            child: Text("No attendance data"),
+          );
+        }
+        final percentages = snapshot.data!;
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              maxY: 100,
+              minY: 0,
+              barTouchData: BarTouchData(enabled: true),
+              titlesData: FlTitlesData(
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) => Text('${value.toInt()}%',
+                        style: GoogleFonts.lato(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    reservedSize: 40,
+                  ),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      const days = [
+                        'Mon',
+                        'Tue',
+                        'Wed',
+                        'Thu',
+                        'Fri',
+                        'Sat',
+                        'Sun'
+                      ];
+                      if (value >= 0 && value < days.length) {
+                        return Text(days[value.toInt()],
+                            style: GoogleFonts.lato(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ));
+                      }
+                      return const Text('');
+                    },
+                    reservedSize: 32,
+                  ),
+                ),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              borderData: FlBorderData(
+                show: true,
+                border: Border.all(color: Colors.transparent, width: 0),
+              ),
+              barGroups: List.generate(7, (i) {
+                return BarChartGroupData(
+                  x: i,
+                  barRods: [
+                    BarChartRodData(
+                      toY: percentages[i],
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.red.shade900,
+                          Colors.deepOrange.shade400,
+                          Colors.lightBlueAccent,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                      width: 10,
+                      borderRadius: BorderRadius.circular(4),
+                      backDrawRodData: BackgroundBarChartRodData(
+                        show: true,
+                        toY: 100,
+                        color: Colors.grey.withOpacity(0.1),
+                      ),
+                    ),
+                  ],
+                );
+              }),
+              gridData: FlGridData(show: false, horizontalInterval: 20),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -333,31 +509,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            height: 300,
-            width: double.infinity,
-            margin: const EdgeInsets.only(left: 10, right: 10),
-            decoration: BoxDecoration(
-              color: Colors.deepOrange.shade100,
-              // image: DecorationImage(
-              //   image: const AssetImage("assets/kk.PNG"),
-              //   fit: BoxFit.cover,
-              // ),
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade400,
-                  blurRadius: 4.0,
-                  spreadRadius: 0.9,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Weekly Attendance Overview",
+              style: TextStyle(
+                  color: Colors.red.shade900,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
             ),
-            child: FutureBuilder<Map<String, Map<String, dynamic>>>(
-              future: fetchCompanyWeeklyAttendance(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8.0),
+            child: Container(
+              height: 270,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.deepOrange.shade100,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade400,
+                    blurRadius: 4.0,
+                    spreadRadius: 0.9,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: buildAttendanceBarChart(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: calculateAttendance(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -365,137 +550,81 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     color: Colors.red.shade900,
                   ));
                 }
-                if (snapshot.hasError ||
-                    !snapshot.hasData ||
-                    snapshot.data!.isEmpty) {
-                  return const Center(
-                      child: Text("No attendance data available"));
+                if (snapshot.hasError || !snapshot.hasData) {
+                  return const Center(child: Text("Error loading user lists"));
                 }
+                final presentUserIds =
+                    snapshot.data!['presentUsers'] as List<String>;
+                final absentUserIds =
+                    snapshot.data!['absentUsers'] as List<String>;
 
-                final weeklyAttendance = snapshot.data!;
-                final currentUserAttendance = weeklyAttendance[userId];
-
-                if (currentUserAttendance == null) {
-                  return const Center(child: Text("No data for current user"));
-                }
-
-                final presentData =
-                    currentUserAttendance['present'] as List<int>;
-                final absentData = currentUserAttendance['absent'] as List<int>;
-
-                final weeklyPercentage = List.generate(7, (index) {
-                  final total = presentData[index] + absentData[index];
-                  return total > 0 ? (presentData[index] / total) * 100 : 0.0;
-                });
-
-                return Padding(
-                  padding: EdgeInsets.only(right: 30, top: 25, bottom: 15),
-                  child: Center(
-                    child: LineChart(
-                      LineChartData(
-                        gridData: FlGridData(
-                          show: true,
-                          drawVerticalLine: true,
-                          horizontalInterval: 20,
-                          verticalInterval: 1,
-                          getDrawingHorizontalLine: (value) {
-                            return FlLine(
-                              color: Colors.grey,
-                              strokeWidth: 0.5,
+                Widget buildUserList(
+                    List<String> userIds, String label, Color color) {
+                  if (userIds.isEmpty) {
+                    return Text("No $label users",
+                        style: TextStyle(color: color));
+                  }
+                  return SizedBox(
+                    height: 60,
+                    child: FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .where(FieldPath.documentId,
+                              whereIn: userIds.isEmpty ? ['dummy'] : userIds)
+                          .get(),
+                      builder: (context, userSnapshot) {
+                        if (userSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                              child: CircularProgressIndicator(
+                                  color: Colors.red.shade900));
+                        }
+                        if (userSnapshot.hasError || !userSnapshot.hasData) {
+                          return Text("Error loading $label users",
+                              style: TextStyle(color: color));
+                        }
+                        final docs = userSnapshot.data!.docs;
+                        return ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: docs.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          itemBuilder: (context, index) {
+                            final user =
+                                docs[index].data() as Map<String, dynamic>;
+                            final name = user['name'] ?? docs[index].id;
+                            return Chip(
+                              label: Text(name,
+                                  style: TextStyle(color: Colors.white)),
+                              backgroundColor: color,
                             );
                           },
-                          getDrawingVerticalLine: (value) {
-                            return FlLine(
-                              color: Colors.grey,
-                              strokeWidth: 0.5,
-                            );
-                          },
-                        ),
-                        titlesData: FlTitlesData(
-                          topTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          rightTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                const days = [
-                                  'Mon',
-                                  'Tue',
-                                  'Wed',
-                                  'Thu',
-                                  'Fri',
-                                  'Sat',
-                                  'Sun'
-                                ];
-                                if (value >= 0 && value < days.length) {
-                                  return Text(
-                                    days[value.toInt()],
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  );
-                                }
-                                return const Text('');
-                              },
-                              reservedSize: 30,
-                            ),
-                          ),
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                return Text(
-                                  '${value.toInt()}%',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                );
-                              },
-                              reservedSize: 40,
-                            ),
-                          ),
-                        ),
-                        borderData: FlBorderData(
-                          show: true,
-                          border: Border.all(
-                            color: Colors.red.shade900,
-                            width: 2,
-                          ),
-                        ),
-                        lineBarsData: [
-                          LineChartBarData(
-                            spots: List.generate(
-                              7,
-                              (index) => FlSpot(
-                                index.toDouble(),
-                                weeklyPercentage[index],
-                              ),
-                            ),
-                            isCurved: false,
-                            color: Colors.blue,
-                            barWidth: 3,
-                            isStrokeCapRound: true,
-                            belowBarData: BarAreaData(
-                              show: true,
-                              color: Colors.blue.withOpacity(0.2),
-                            ),
-                          ),
-                        ],
-                        minY: 0,
-                        maxY: 100,
-                      ),
+                        );
+                      },
                     ),
-                  ),
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Present Users:",
+                        style: GoogleFonts.lato(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red.shade900,
+                            fontSize: 18)),
+                    buildUserList(presentUserIds, "present", Colors.blue),
+                    const SizedBox(height: 8),
+                    Text("Absent Users:",
+                        style: GoogleFonts.lato(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red.shade900)),
+                    buildUserList(absentUserIds, "absent", Colors.red.shade900),
+                  ],
                 );
               },
             ),
-          ),
+          )
         ]),
       ),
     );

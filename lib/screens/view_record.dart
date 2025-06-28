@@ -63,12 +63,12 @@ class ViewRecord extends StatelessWidget {
             itemBuilder: (context, index) {
               final record = attendanceRecords[index];
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(4.0),
                 child: ListTile(
-                  tileColor: Colors.deepOrange.shade100,
+                  tileColor: Colors.lightBlue.shade100,
                   shape: RoundedRectangleBorder(
                     side: BorderSide(
-                      color: Colors.red.shade900,
+                      color: Colors.black,
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(10),

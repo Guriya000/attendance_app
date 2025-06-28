@@ -1,3 +1,4 @@
+import 'package:attendance_app/main.dart';
 import 'package:attendance_app/screens/admin_login.dart';
 
 import 'package:attendance_app/screens/home_screen.dart';
@@ -6,6 +7,7 @@ import 'package:attendance_app/screens/signup_page.dart';
 import 'package:attendance_app/services/app_service.dart';
 import 'package:attendance_app/services/auth_services.dart';
 import 'package:attendance_app/user_model.dart';
+import 'package:attendance_app/widgets/mybutton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,18 +54,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   backgroundColor: Theme.of(context).primaryColor,
-      //   title: const Text(
-      //     "LOGIN TO MARK ATTENDANCE",
-      //     style: TextStyle(
-      //         letterSpacing: 1,
-      //         color: Colors.black,
-      //         fontWeight: FontWeight.bold,
-      //         fontSize: 16),
-      //   ),
-      // ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -205,36 +195,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(top: 15, left: 30, right: 30),
-                    child: GestureDetector(
-                      child: Container(
-                        height: 45,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.grey.shade300,
-                                  offset: const Offset(1, 1.5),
-                                  spreadRadius: 1)
-                            ],
-                            color: Theme.of(context).primaryColor,
-                            border: Border.all(color: Colors.red),
-                            borderRadius: BorderRadius.circular(15)),
-                        child: const Center(
-                          child: Text(
-                            "LOGIN",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      onTap: () async {
-                        await _login();
-                      },
-                    ),
-                  ),
+                      padding:
+                          const EdgeInsets.only(top: 15, left: 30, right: 30),
+                      child: Mybutton(
+                        buttonname: "LOGIN",
+                        onPressed: _login,
+                      )),
                 ],
               ),
             ),
@@ -282,36 +248,9 @@ class _LoginPageState extends State<LoginPage> {
                 Get.to(const AdminLogin());
               },
             ),
-            // Container(
-            //   height: 200,
-            //   margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
-            //   width: double.infinity,
-            //   child: Image.asset(
-            //     "assets/signup.jpg",
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
             const SizedBox(
               height: 20,
             ),
-            // GestureDetector(
-            //   child: const Padding(
-            //     padding: EdgeInsets.only(bottom: 20),
-            //     child: Text(
-            //       "About Developer",
-            //       style: TextStyle(
-            //         decoration: TextDecoration.underline,
-            //         decorationColor: Colors.blue,
-            //         fontWeight: FontWeight.w900,
-            //         fontSize: 18,
-            //         color: Colors.blue,
-            //       ),
-            //     ),
-            //   ),
-            //   onTap: () {
-            //     Get.to(const AboutUs());
-            //   },
-            // )
           ],
         ),
       ),

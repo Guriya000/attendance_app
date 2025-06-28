@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:attendance_app/screens/about_us.dart';
 import 'package:attendance_app/screens/login_page.dart';
 import 'package:attendance_app/services/auth_services.dart';
 import 'package:attendance_app/user_model.dart';
+import 'package:attendance_app/widgets/mybutton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -24,17 +27,6 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //     backgroundColor: Theme.of(context).primaryColor,
-      //     centerTitle: true,
-      //     title: const Text(
-      //       "SIGN UP TO MARK ATTENDANCE",
-      //       style: TextStyle(
-      //           letterSpacing: 1,
-      //           color: Colors.black,
-      //           fontWeight: FontWeight.bold,
-      //           fontSize: 16),
-      //     )),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -171,52 +163,36 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       )),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(top: 15, left: 30, right: 30),
-                    child: GestureDetector(
-                      child: Container(
-                        height: 45,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            border: Border.all(color: Colors.red),
-                            borderRadius: BorderRadius.circular(15)),
-                        child: const Center(
-                          child: Text(
-                            "SIGN UP",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      onTap: () async {
-                        if (_formKey.currentState!.validate()) {
-                          AppService.showLoader();
-                          UserModel? user = await AuthService.signUp(UserModel(
-                              status: "active",
-                              name: _nameController.text,
-                              email: _emailController.text,
-                              pincode: _passwordController.text));
-                          AppService.hideLoader();
-                          if (user != null) {
-                            Get.to(const LoginPage());
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  content: const Text(
-                                    'Signup failed. Please try again.',
-                                    style: TextStyle(color: Colors.black),
-                                  )),
-                            );
+                      padding:
+                          const EdgeInsets.only(top: 15, left: 30, right: 30),
+                      child: Mybutton(
+                        buttonname: "SIGN UP",
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            AppService.showLoader();
+                            UserModel? user = await AuthService.signUp(
+                                UserModel(
+                                    status: "active",
+                                    name: _nameController.text,
+                                    email: _emailController.text,
+                                    pincode: _passwordController.text));
+                            AppService.hideLoader();
+                            if (user != null) {
+                              Get.to(const LoginPage());
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                    content: const Text(
+                                      'Signup failed. Please try again.',
+                                      style: TextStyle(color: Colors.black),
+                                    )),
+                              );
+                            }
                           }
-                        }
-                      },
-                    ),
-                  ),
+                        },
+                      )),
                 ],
               ),
             ),

@@ -15,12 +15,13 @@ class AuthService {
   static Future<UserModel?> signUp(UserModel userModel) async {
     try {
       if (await getUserByEmail(userModel.email.toString()) != null) {
-        ScaffoldMessenger.of(Get.context!).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text("A user already exist with this email."),
+        ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
+          backgroundColor: Theme.of(Get.context!).primaryColor,
+          content: const Text(
+            "A user already exist with this email.",
+            style: TextStyle(color: Colors.black),
           ),
-        );
+        ));
         return null;
       }
       DocumentReference userRef =
@@ -60,8 +61,14 @@ class AuthService {
 
         // Show a snackbar with an error message
         ScaffoldMessenger.of(Get.context!).showSnackBar(
-          const SnackBar(
-            content: Text("No user found with the provided email and pincode."),
+          SnackBar(
+            backgroundColor: Theme.of(Get.context!).primaryColor,
+            content: const Text(
+              "No user found with the provided email and pincode.",
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
           ),
         );
         return null;
@@ -115,14 +122,18 @@ class AuthService {
 
         return UserModel.fromJson(userData);
       } else {
-        ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(
-            content: Text("No user found with the provided email.")));
+        ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
+            backgroundColor: Theme.of(Get.context!).primaryColor,
+            content: const Text("No user found with the provided email.",
+                style: TextStyle(color: Colors.black))));
 
         return null;
       }
     } catch (e) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
-          SnackBar(content: Text("Error fetching user by email: $e")));
+      ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
+          backgroundColor: Theme.of(Get.context!).primaryColor,
+          content: Text("Error fetching user by email: $e",
+              style: const TextStyle(color: Colors.black))));
 
       return null;
     }

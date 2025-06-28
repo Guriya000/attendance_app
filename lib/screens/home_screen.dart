@@ -2,6 +2,7 @@ import 'package:attendance_app/services/app_service.dart';
 import 'package:attendance_app/services/attendance_services.dart';
 import 'package:attendance_app/services/auth_services.dart';
 import 'package:attendance_app/user_model.dart';
+import 'package:attendance_app/widgets/mybutton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -45,10 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Get.to(() => ViewRecord());
+                AuthService.signOut();
+                Get.offAllNamed('/login');
               },
               icon: const Icon(
-                Icons.history,
+                Icons.exit_to_app,
                 color: Colors.black,
               ))
         ],
@@ -57,7 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
           stream: AttendanceService.getTodaysPresentUsers(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Colors.red.shade900,
+              ));
             }
 
             if (snapshot.hasError) {
@@ -85,8 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Text(
                           attendanceRecords.length.toString(),
-                          style: const TextStyle(
-                              color: Colors.red,
+                          style: TextStyle(
+                              color: Colors.lightBlue.shade600,
                               fontSize: 50,
                               fontWeight: FontWeight.bold),
                         ),
@@ -165,8 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             );
           }),
-      floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: Theme.of(context).primaryColor,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: Mybutton(
+          buttonname: "Mark Attendance",
           onPressed: () async {
             // Get.to(() => QrScanner());
             AppService.showLoader();
@@ -180,20 +187,46 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: Theme.of(context).primaryColor,
               ));
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: const Text(
                   "Error marking attendance!",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                 ),
-                backgroundColor: Colors.red,
+                backgroundColor: Theme.of(context).primaryColor,
               ));
             }
             AppService.hideLoader();
           },
-          label: const Text(
-            "Mark Attendance",
-            style: TextStyle(color: Colors.black, fontSize: 14),
-          )),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          unselectedLabelStyle: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+          selectedLabelStyle:
+              const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          currentIndex: 0,
+          backgroundColor: Colors.grey.shade300,
+          onTap: (value) {
+            if (value == 0) {
+              Get.to(() => const HomeScreen());
+            } else if (value == 1) {
+              Get.to(() => ViewRecord());
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home, color: Colors.black),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history, color: Colors.black),
+              label: 'History',
+            ),
+          ]),
     );
   }
 }

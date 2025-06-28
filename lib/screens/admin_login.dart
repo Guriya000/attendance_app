@@ -4,6 +4,7 @@ import 'package:attendance_app/screens/reset_pin_screen.dart';
 import 'package:attendance_app/services/app_service.dart';
 import 'package:attendance_app/services/auth_services.dart';
 import 'package:attendance_app/user_model.dart';
+import 'package:attendance_app/widgets/mybutton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
@@ -209,32 +210,38 @@ class _AdminLoginState extends State<AdminLogin> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 15, left: 30, right: 30),
-                  child: GestureDetector(
-                    child: Container(
-                      height: 45,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                offset: const Offset(1, 1.5),
-                                spreadRadius: 1)
-                          ],
-                          color: Theme.of(context).primaryColor,
-                          border: Border.all(color: Colors.red),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: const Center(
-                        child: Text(
-                          "LOGIN",
-                          style: TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    onTap: () async {
-                      await _login();
-                    },
-                  ),
+
+                  child: Mybutton(
+                      buttonname: "LOGIN",
+                      onPressed: () async {
+                        await _login();
+                      }),
+                  // child: GestureDetector(
+                  //   child: Container(
+                  //     height: 45,
+                  //     width: double.infinity,
+                  //     decoration: BoxDecoration(
+                  //         boxShadow: [
+                  //           BoxShadow(
+                  //               color: Colors.grey.shade300,
+                  //               offset: const Offset(1, 1.5),
+                  //               spreadRadius: 1)
+                  //         ],
+                  //         color: Theme.of(context).primaryColor,
+                  //         border: Border.all(color: Colors.red),
+                  //         borderRadius: BorderRadius.circular(15)),
+                  //     child: const Center(
+                  //       child: Text(
+                  //         "LOGIN",
+                  //         style: TextStyle(
+                  //             color: Colors.black, fontWeight: FontWeight.bold),
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   onTap: () async {
+                  //     await _login();
+                  //   },
+                  // ),
                 ),
               ],
             ),
